@@ -177,16 +177,29 @@ function debugObject(obj) {
 
           let previousBackground = $previousThis.attr("id");
 
-          if (historyObj.currentObject === activeBackground) {
-            // Check that it's only happened once
-
+          // if (historyObj.currentObject === activeBackground) {
+          //   // Check that it's only happened once
+          //   // console.log("activeBackground return");
+          //   return;
+          // }
+            // ---
+            
+            
+          if (historyObj.currentObject == previousBackground ||
+            historyObj.currentObject == activeBackground) {
+            console.log("[return]");
             return;
-
           }
 
+          if (DEBUG) console.log(`==========\n
+activeBackground = ${activeBackground}\n
+previousBackground = ${previousBackground}\n
+==========`);
+
+          $(".pb-12").removeClass(historyObj.currentObject);
           historyObj.currentObject = activeBackground;
 
-          if (DEBUG) debugObject(historyObj);
+          // if (DEBUG) debugObject(historyObj);
 
           $(".pb-12").removeClass(historyObj.currentObject);
           // $(".pb-12").removeClass(defaultBackgroundId);
@@ -196,6 +209,8 @@ function debugObject(obj) {
           } else if (setDefaultBackground) {
             $(".pb-12").addClass(defaultBackgroundId);
           }
+
+          
           // else if (historyObj.currentObject === $previousThis.attr("id")) {
           //   console.log("second eq");
           //   return;
