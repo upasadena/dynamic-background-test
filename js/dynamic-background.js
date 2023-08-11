@@ -23,7 +23,8 @@ const defaultBackgroundId = "red";
 // END CONSTANTS
 
 function lastElement(arr) {
-  return arr[arr.length - 1];
+  // return arr[arr.length - 1];
+  return arr.slice(-1);
 }
 
 // Anonymous "self-invoking" function
@@ -118,9 +119,11 @@ function lastElement(arr) {
           
           if ($(this).isInViewport()) {
             // If the background hasn't changed, return
-            if (backgroundHistory && backgroundHistory[backgroundHistory.length - 1] == activeBackground) {
+            if (backgroundHistory && lastElement(backgroundHistory) == activeBackground) {
               return;
             }
+
+            if (DEBUG) console.log(`backgroundHistory: ${backgroundHistory}`);
 
             // If the user scrolled down or up
             if (userScrolledDown) {
@@ -128,39 +131,42 @@ function lastElement(arr) {
               // Remove previous styling if it exists
               if (backgroundHistory) {
                 // if (DEBUG) console.log("Downscroll previousBg mid detected");
-                $(".pb-12").removeClass(backgroundHistory.pop());
+                $(".pb-12").removeClass(lastElement(backgroundHistory));
               }
 
-              if (DEBUG) {
-                console.log("Downscroll if mid detected");
-                console.log("[before swap]")
-                console.log(`activeBackground: ${activeBackground}`);
-                console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
-              }
+              // if (DEBUG) {
+              //   console.log("Downscroll if mid detected");
+              //   console.log("[before swap]")
+              //   console.log(`activeBackground: ${activeBackground}`);
+              //   console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
+              // }
 
               // Add new styling
               $(".pb-12").addClass(activeBackground);
               backgroundHistory.push(activeBackground);
 
-              if (DEBUG) {
-                console.log("Downscroll if mid detected");
-                console.log("[after swap]")
-                console.log(`activeBackground: ${activeBackground}`);
-                console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
-                console.log("======================================")
-              }
+              // if (DEBUG) {
+              //   console.log("Downscroll if mid detected");
+              //   console.log("[after swap]")
+              //   console.log(`activeBackground: ${activeBackground}`);
+              //   console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
+              //   console.log("======================================")
+              // }
             } else {
               // If user scrolled up
               if (backgroundHistory) {
-                if (DEBUG) {
-                  console.log("Upscroll if mid detected");
-                  console.log("[before swap]")
-                  console.log(`activeBackground: ${activeBackground}`);
-                  console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
-                }
+                // if (DEBUG) {
+                //   console.log("Upscroll if mid detected");
+                //   console.log("[before swap]")
+                //   console.log(`activeBackground: ${activeBackground}`);
+                //   console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
+                // }
 
                 $(".pb-12").removeClass(activeBackground);
-                $(".pb-12").addClass(backgroundHistory.pop());
+                let newClass = backgroundHistory.pop();
+                if (!newClass) return;
+                $(".pb-12").addClass(newClass);
+                backgroundHistory.push(newClass);
 
                 // Swap the variables
                 // let temp = activeBackground;
@@ -169,13 +175,13 @@ function lastElement(arr) {
 
                 // activeBackground = previousBackground;
 
-                if (DEBUG) {
-                  console.log("Upscroll if mid detected");
-                  console.log("[after swap]")
-                  console.log(`activeBackground: ${activeBackground}`);
-                  console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
-                  console.log("======================================")
-                }
+                // if (DEBUG) {
+                //   console.log("Upscroll if mid detected");
+                //   console.log("[after swap]")
+                //   console.log(`activeBackground: ${activeBackground}`);
+                //   console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
+                //   console.log("======================================")
+                // }
               } 
             }
           }
