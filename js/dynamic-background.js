@@ -22,15 +22,15 @@ const setDefaultBackground = true;
 const defaultBackgroundId = "red";
 // END CONSTANTS
 
-function swap(x, y) {
-  return y, x;
+function lastElement(arr) {
+  return arr[arr.length - 1];
 }
 
 // Anonymous "self-invoking" function
 (function() {
   let startingTime = new Date().getTime();
   // Load the script
-  let script = document.createElement("SCRIPT");
+  let script = document.createElement("script");
   script.src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js";
   script.type = "text/javascript";
   document.getElementsByTagName("head")[0].appendChild(script);
@@ -48,17 +48,23 @@ function swap(x, y) {
   // Start polling...
   checkReady(function($) {
       // "Global" variables
-      let previousBackground = undefined;
+      // let previousBackground = undefined;
       let lastScrollTop = 0;
       let userScrolledDown = false;
+      const backgroundHistory = [];
 
+      // This function goes once jQuery is loaded
       $(function() {
         let endingTime = new Date().getTime();
         let tookTime = endingTime - startingTime;
         if (DEBUG) {
           console.log("jQuery is loaded, after " + tookTime + " milliseconds!");
         }
-        $(".pb-12").addClass(defaultBackgroundId);
+
+        if (setDefaultBackground) {
+          $(".pb-12").addClass(defaultBackgroundId);
+          backgroundHistory.push(defaultBackgroundId);
+        }
       });
 
       // Check if the <div> is in the viewport
@@ -85,31 +91,8 @@ function swap(x, y) {
         const withinViewportCenter =
           elementBottom > viewportCenterTop &&
           elementTop < viewportCenterBottom;
-      
-        // if (userScrolledDown) {
-        // if (DEBUG) {
-        //   console.log(`elementTop = ${elementTop}`);
-        //   console.log(`elementBottom = ${elementBottom}`);
-        //   console.log(`viewportTop = ${viewportTop}`);
-        //   console.log(`viewportBottom = ${viewportBottom}`);
-        //   console.log("==================================");
-        // }
 
-          // The higher the number, the lower on the page it is
-          // const belowViewportTop = elementBottom > viewportTop;
-          // const aboveViewportBottom = elementTop < viewportBottom;
-
-          
-
-          // return belowViewportTop && aboveViewportBottom;
         return withinViewportCenter;
-        // } else {
-          /**
-           * As soon as the elementTop is in the center, switch styles to the
-           * previous style
-           */
-          // return withinViewportCenter;
-        // }
       };
       
       // Check if the user has scrolled up or down
@@ -134,7 +117,8 @@ function swap(x, y) {
           let activeBackground = $(this).attr("id");
           
           if ($(this).isInViewport()) {
-            if (previousBackground && previousBackground == activeBackground) {
+            // If the background hasn't changed, return
+            if (backgroundHistory && backgroundHistory[backgroundHistory.length - 1] == activeBackground) {
               return;
             }
 
@@ -142,54 +126,54 @@ function swap(x, y) {
             if (userScrolledDown) {
               // if (DEBUG) console.log("Downscroll mid detected");
               // Remove previous styling if it exists
-              if (previousBackground) {
+              if (backgroundHistory) {
                 // if (DEBUG) console.log("Downscroll previousBg mid detected");
-                $(".pb-12").removeClass(previousBackground);
+                $(".pb-12").removeClass(backgroundHistory.pop());
               }
 
               if (DEBUG) {
                 console.log("Downscroll if mid detected");
                 console.log("[before swap]")
                 console.log(`activeBackground: ${activeBackground}`);
-                console.log(`previousBackground: ${previousBackground}`);
+                console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
               }
 
               // Add new styling
               $(".pb-12").addClass(activeBackground);
-              previousBackground = activeBackground;
+              backgroundHistory.push(activeBackground);
 
               if (DEBUG) {
                 console.log("Downscroll if mid detected");
                 console.log("[after swap]")
                 console.log(`activeBackground: ${activeBackground}`);
-                console.log(`previousBackground: ${previousBackground}`);
+                console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
                 console.log("======================================")
               }
             } else {
               // If user scrolled up
-              if (previousBackground) {
+              if (backgroundHistory) {
                 if (DEBUG) {
                   console.log("Upscroll if mid detected");
                   console.log("[before swap]")
                   console.log(`activeBackground: ${activeBackground}`);
-                  console.log(`previousBackground: ${previousBackground}`);
+                  console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
                 }
 
                 $(".pb-12").removeClass(activeBackground);
-                $(".pb-12").addClass(previousBackground);
+                $(".pb-12").addClass(backgroundHistory.pop());
 
                 // Swap the variables
                 // let temp = activeBackground;
                 // activeBackground = previousBackground;
                 // previousBackground = temp;
 
-                activeBackground = previousBackground;
+                // activeBackground = previousBackground;
 
                 if (DEBUG) {
                   console.log("Upscroll if mid detected");
                   console.log("[after swap]")
                   console.log(`activeBackground: ${activeBackground}`);
-                  console.log(`previousBackground: ${previousBackground}`);
+                  console.log(`backgroundHistory: ${lastElement(backgroundHistory)}`);
                   console.log("======================================")
                 }
               } 
