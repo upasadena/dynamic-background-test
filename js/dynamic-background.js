@@ -2,9 +2,33 @@
  * dynamicBg.js
  *
  * This script dynamically allows you to dynamically change your background
- * colour and image
+ * colour and/or image using tags
  *
  * Made by /u/_pasadena
+ */
+
+/**
+ * MIT License
+ *
+ * Copyright (c) 2023 Pasadena
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
  */
 
 /**
@@ -13,7 +37,7 @@
  * Change these as needed
  */
 // Change to true if there is a bug
-const DEBUG = true;
+const DEBUG = false;
 const centerAllowance = 45; // pixels
 
 // Whether a background colour should be set by default
@@ -148,14 +172,15 @@ function debugObject(obj) {
     // Check if the user has scrolled up or down
     $(window).scroll(function(event){
       let st = $(this).scrollTop();
-      if (st > lastScrollTop){
+
+      if (st > lastScrollTop) {
         // If the user scrolled down
         userScrolledDown = true;
       } else {
         // If the user scrolled up
         userScrolledDown = false;
-        // upscroll code
       }
+
       lastScrollTop = st;
     });
     
@@ -166,7 +191,6 @@ function debugObject(obj) {
         
         if ($(this).isInViewport()) {
           $previousThis = $(this);
-          // if (DEBUG) console.log(`backgroundHistory: ${backgroundHistory}`);
 
           // If the background hasn't changed, return
           if (historyObj.currentObject === activeBackground) {
@@ -197,41 +221,19 @@ function debugObject(obj) {
           $previousThis.isInViewport() &&
           !userScrolledDown) {
 
-          // If the history object exists and isn't an empty array
-          // if (isFullArray(historyObj.objectsBelow)) {
-          //   historyObj.objectsBelow.push(historyObj.currentObject);
-          // } else {
-          //   historyObj.objectsBelow = [historyObj.currentObject]
-          // }
-
           let previousBackground = $previousThis.attr("id");
 
           if (scrollUpObject && scrollUpObject == previousBackground) {
-            console.log("early return");
             return;
           }
 
           scrollUpObject = previousBackground;
-
-          // if (historyObj.currentObject === activeBackground) {
-          //   // Check that it's only happened once
-          //   // console.log("activeBackground return");
-          //   return;
-          // }
-            // ---
-            
             
           if (historyObj.currentObject == previousBackground ||
             historyObj.currentObject == activeBackground) {
-            // console.log("[return]");
 
             $(".pb-12").removeClass(historyObj.currentObject);
             historyObj.currentObject = historyObj.objectsAbove.pop();
-
-            // if (DEBUG) debugObject(historyObj);
-
-            // $(".pb-12").removeClass(historyObj.currentObject);
-            // $(".pb-12").removeClass(defaultBackgroundId);
 
             if (isFullArray(historyObj.objectsAbove)) {
               $(".pb-12").addClass(historyObj.currentObject);
@@ -239,21 +241,8 @@ function debugObject(obj) {
               $(".pb-12").addClass(defaultBackgroundId);
             }
 
-            return;
+            if (DEBUG) console.log(debugObject(historyObj));
           }
-
-//           if (DEBUG) console.log(`==========\n
-// activeBackground = ${activeBackground}\n
-// previousBackground = ${previousBackground}\n
-// scrollUpObject = ${scrollUpObject}\n
-// ==========`);
-
-          // console.log(scrollUpObject);
-
-          // $(".pb-12").removeClass(historyObj.currentObject);
-          // historyObj.currentObject = activeBackground;
-
-          
         }
       });
     });
