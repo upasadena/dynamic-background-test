@@ -146,15 +146,16 @@ function debugObject(obj) {
 
           // If the user scrolled down
           if (userScrolledDown) {
-            historyObj.currentObject = activeBackground;
-
             // If the history object exists and isn't an empty list
             if (isFullArray(historyObj.objectsAbove)) {
-              $(".pb-12").removeClass(lastElement(historyObj.objectsAbove));
+              // Push the old currentObject
               historyObj.objectsAbove.push(historyObj.currentObject)
+              $(".pb-12").removeClass(historyObj.currentObject);
             } else {
               historyObj.objectsAbove = [historyObj.currentObject];
             }
+
+            historyObj.currentObject = activeBackground;
 
             if (DEBUG) debugObject(historyObj);
 
@@ -188,7 +189,7 @@ function debugObject(obj) {
           if (DEBUG) debugObject(historyObj);
 
           $(".pb-12").removeClass(historyObj.currentObject);
-          $(".pb-12").removeClass(defaultBackgroundId);
+          // $(".pb-12").removeClass(defaultBackgroundId);
 
           if (isFullArray(historyObj.objectsAbove)) {
             $(".pb-12").addClass(historyObj.objectsAbove.pop());
