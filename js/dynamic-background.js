@@ -1,87 +1,154 @@
-// var red = $("#red-bg").offset().top - 100;
-// var blue = $("#blue-bg").offset().top - 100;
-// var purple = $("#purple-bg").offset().top - 100;
+/**
+ * dynamicBg.js
+ *
+ * This script dynamically allows you to dynamically change your background
+ * colour and image
+ *
+ * Made by /u/_pasadena
+ */
 
-// // $(function() {
-// //   $(window).scroll(function () {
-// //      if ($(this).scrollTop() > 50) {
-// //         $("body").addClass("changeColor")
-// //      }
-// //      if ($(this).scrollTop() < 50) {
-// //         $("body").removeClass("changeColor")
-// //      }
-// //   });
-// // });
+/**
+ * CONSTANTS
+ * 
+ * Change these as needed
+ */
+// Change to true if there is a bug
+const DEBUG = false;
+const centerAllowance = 45; // pixels
+// END CONSTANTS
 
-// $(document).scroll(function(){
-//   if($(this).scrollTop() > red) {   
-//       $("header").css({"background-color":"red"});
-//   } else if($(this).scrollTop() > blue) {   
-//       $("header").css({"background-color":"blue"});
-//     } else if($(this).scrollTop() > purple) {   
-//         $("header").css({"background-color":"purple"});
-//   } 
-//   // else {
-//   //     $("header").css({"background-color":"#520833"});
-//   // }
-// });
+function swap(x, y) {
+  return y, x;
+}
 
-var startingTime = new Date().getTime();
-var script = document.createElement("script");
-script.src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"; // Check https://jquery.com/ for the current version
-document.getElementsByTagName("head")[0].appendChild(script);
+// Anonymous "self-invoking" function
+(function() {
+  let startingTime = new Date().getTime();
+  // Load the script
+  let script = document.createElement("SCRIPT");
+  script.src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js";
+  script.type = "text/javascript";
+  document.getElementsByTagName("head")[0].appendChild(script);
 
-// Poll for jQuery to come into existence
-var checkReady = function(callback) {
-  if (window.jQuery) {
-      callback(jQuery);
-  }
-  else {
-      window.setTimeout(function() { checkReady(callback); }, 20);
-  }
-};
-
-// Start polling...
-checkReady(function($) {
-  $(function() {
-      var endingTime = new Date().getTime();
-      var tookTime = endingTime - startingTime;
-      window.alert("jQuery is loaded, after " + tookTime + " milliseconds!");
-  });
-});
-
-$.fn.isInViewport = function() {
-  let elementTop = $(this).offset().top;
-  let elementBottom = elementTop + $(this).outerHeight();
-
-  let viewportTop = $(window).scrollTop();
-  let viewportBottom = viewportTop + $(window).height();
-
-  return elementBottom > viewportTop && elementTop < viewportBottom;
-};
-
-let previousColor = undefined;
-
-$(window).on("resize scroll", function() {
-  $(".color").each(function() {
-    let activeColor = $(this).attr("id");
-    
-    if ($(this).isInViewport()) {
-      // console.log(`"${activeColor}" is in viewport!`);
-      // console.log(`activeColor = ${activeColor}`);
-      // console.log(`previousColor = ${previousColor}`);
-      // $("#fixed-" + activeColor).addClass(activeColor + "-active");
-
-      if (previousColor) {
-        $(".pb-12").removeClass(previousColor);
+  // Poll for jQuery to come into existence
+  let checkReady = function(callback) {
+      if (window.jQuery) {
+          callback(jQuery);
       }
+      else {
+          window.setTimeout(function() { checkReady(callback); }, 20);
+      }
+  };
 
-      $(".pb-12").addClass(activeColor);
-      previousColor = activeColor;
-    }
-    // } else {
-    //   // $("#fixed-" + activeColor).removeClass(activeColor + "-active");
-    //   $(".pb-12").removeClass(activeColor);
-    // }
+  // Start polling...
+  checkReady(function($) {
+      // "Global" variables
+      let previousBackground = undefined;
+      let lastScrollTop = 0;
+      let userScrolledDown = false;
+
+      $(function() {
+        let endingTime = new Date().getTime();
+        let tookTime = endingTime - startingTime;
+        console.log("jQuery is loaded, after " + tookTime + " milliseconds!");
+      });
+
+      // Check if the <div> is in the viewport
+      $.fn.isInViewport = function() {
+        /**
+         * The absolute (in the context of the page) y position of the
+         * elements, static
+         */
+        let elementTop = $(this).offset().top;
+        let elementBottom = elementTop + $(this).outerHeight();
+      
+        /**
+         * The top and bottom pixels that are seen
+         */
+        let viewportTop = $(window).scrollTop();
+        let viewportBottom = viewportTop + $(window).height();
+
+        // Create center variables
+        const viewportCenter =
+          viewportTop + ((viewportBottom - viewportTop) / 2);
+        const viewportCenterTop = viewportCenter - centerAllowance;
+        const viewportCenterBottom = viewportCenter + centerAllowance;
+        // Check if it's within the center
+        const withinViewportCenter =
+          elementBottom > viewportCenterTop &&
+          elementTop < viewportCenterBottom;
+      
+        // if (userScrolledDown) {
+        if (DEBUG) {
+          console.log(`elementTop = ${elementTop}`);
+          console.log(`elementBottom = ${elementBottom}`);
+          console.log(`viewportTop = ${viewportTop}`);
+          console.log(`viewportBottom = ${viewportBottom}`);
+          console.log("==================================");
+        }
+
+          // The higher the number, the lower on the page it is
+          // const belowViewportTop = elementBottom > viewportTop;
+          // const aboveViewportBottom = elementTop < viewportBottom;
+
+          
+
+          // return belowViewportTop && aboveViewportBottom;
+        return withinViewportCenter;
+        // } else {
+          /**
+           * As soon as the elementTop is in the center, switch styles to the
+           * previous style
+           */
+          // return withinViewportCenter;
+        // }
+      };
+      
+      // Check if the user has scrolled up or down
+      $(window).scroll(function(event){
+        let st = $(this).scrollTop();
+        if (st > lastScrollTop){
+          // If the user scrolled down
+          userScrolledDown = true;
+          console.log("downscroll");
+        } else {
+          // If the user scrolled up
+          console.log("upscroll");
+          userScrolledDown = false;
+          // upscroll code
+        }
+        lastScrollTop = st;
+      });
+      
+      // On scroll
+      $(window).on("resize scroll", function() {
+        $(".bg").each(function() {
+          let activeBackground = $(this).attr("id");
+          
+          if ($(this).isInViewport()) {
+            if (userScrolledDown) {
+              // Remove previous styling if it exists
+              if (previousBackground) {
+                $(".pb-12").removeClass(previousBackground);
+              }
+
+              // Add new styling
+              $(".pb-12").addClass(activeBackground);
+              previousBackground = activeBackground;
+            } else {
+              // If user scrolled up
+              if (previousBackground) {
+                $(".pb-12").removeClass(activeBackground);
+                $(".pb-12").addClass(previousBackground);
+
+                // Swap the variables
+                let temp = activeBackground;
+                activeBackground = previousBackground;
+                previousBackground = temp;
+              }
+            }
+          }
+        });
+      });
   });
-});
+})();
