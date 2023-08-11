@@ -72,7 +72,7 @@ function debugObject(obj) {
       historyObj.currentObject = defaultBackgroundId;
     }
 
-    if (DEBUG) console.log(historyObj);
+    if (DEBUG) debugObject(historyObj);
 
     // This function goes once jQuery is loaded
     $(function() {
@@ -174,23 +174,27 @@ function debugObject(obj) {
           //   historyObj.objectsBelow = [historyObj.currentObject]
           // }
 
+          let previousBackground = $previousThis.attr("id");
+
           if (historyObj.currentObject === activeBackground) {
-            console.log("first eq")
-            // return;
+            // Check that it's only happened once
 
-            historyObj.currentObject = activeBackground;
+            return;
 
-            if (DEBUG) debugObject(historyObj);
+          }
 
-            $(".pb-12").removeClass(historyObj.currentObject);
-            $(".pb-12").removeClass(defaultBackgroundId);
+          historyObj.currentObject = activeBackground;
 
-            if (isFullArray(historyObj.objectsAbove)) {
-              $(".pb-12").addClass(historyObj.objectsAbove.pop());
-            } else if (setDefaultBackground) {
-              $(".pb-12").addClass(defaultBackgroundId);
-            }
-          } 
+          if (DEBUG) debugObject(historyObj);
+
+          $(".pb-12").removeClass(historyObj.currentObject);
+          $(".pb-12").removeClass(defaultBackgroundId);
+
+          if (isFullArray(historyObj.objectsAbove)) {
+            $(".pb-12").addClass(historyObj.objectsAbove.pop());
+          } else if (setDefaultBackground) {
+            $(".pb-12").addClass(defaultBackgroundId);
+          }
           // else if (historyObj.currentObject === $previousThis.attr("id")) {
           //   console.log("second eq");
           //   return;
