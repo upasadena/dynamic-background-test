@@ -127,7 +127,7 @@ function lastElement(arr) {
       $(".bg").each(function() {
         let activeBackground = $(this).attr("id");
         
-        if (!$this && $(this).isInViewport()) {
+        if ($(this).isInViewport()) {
           $this = $(this);
           // if (DEBUG) console.log(`backgroundHistory: ${backgroundHistory}`);
 
@@ -150,7 +150,11 @@ function lastElement(arr) {
 
             $(".pb-12").addClass(historyObj.currentObject);
 
-          } else {
+          }
+        } else if ($this && $this.isInViewport()) {
+          if (DEBUG) console.log("UP IN VIEWPORT");
+
+          if (!userScrolledDown) {
             // If user scrolled up
             historyObj.objectBelow = historyObj.currentObject;
             historyObj.currentObject = activeBackground;
@@ -166,8 +170,6 @@ function lastElement(arr) {
               $(".pb-12").addClass(defaultBackgroundId);
             }
           }
-        } else if ($this.isInViewport()) {
-          if (DEBUG) console.log("UP IN VIEWPORT");
         } else {
           if (DEBUG) console.log("NOT IN VIEWPORT");
         }
