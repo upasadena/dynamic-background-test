@@ -13,7 +13,7 @@
  * Change these as needed
  */
 // Change to true if there is a bug
-const DEBUG = false;
+const DEBUG = true;
 const centerAllowance = 45; // pixels
 // END CONSTANTS
 
@@ -79,13 +79,13 @@ function swap(x, y) {
           elementTop < viewportCenterBottom;
       
         // if (userScrolledDown) {
-        if (DEBUG) {
-          console.log(`elementTop = ${elementTop}`);
-          console.log(`elementBottom = ${elementBottom}`);
-          console.log(`viewportTop = ${viewportTop}`);
-          console.log(`viewportBottom = ${viewportBottom}`);
-          console.log("==================================");
-        }
+        // if (DEBUG) {
+        //   console.log(`elementTop = ${elementTop}`);
+        //   console.log(`elementBottom = ${elementBottom}`);
+        //   console.log(`viewportTop = ${viewportTop}`);
+        //   console.log(`viewportBottom = ${viewportBottom}`);
+        //   console.log("==================================");
+        // }
 
           // The higher the number, the lower on the page it is
           // const belowViewportTop = elementBottom > viewportTop;
@@ -126,9 +126,12 @@ function swap(x, y) {
           let activeBackground = $(this).attr("id");
           
           if ($(this).isInViewport()) {
+            // If the user scrolled down or up
             if (userScrolledDown) {
+              // if (DEBUG) console.log("Downscroll mid detected");
               // Remove previous styling if it exists
               if (previousBackground) {
+                // if (DEBUG) console.log("Downscroll previousBg mid detected");
                 $(".pb-12").removeClass(previousBackground);
               }
 
@@ -138,14 +141,24 @@ function swap(x, y) {
             } else {
               // If user scrolled up
               if (previousBackground) {
+                if (DEBUG) console.log("Upscroll if mid detected");
                 $(".pb-12").removeClass(activeBackground);
                 $(".pb-12").addClass(previousBackground);
 
                 // Swap the variables
-                let temp = activeBackground;
-                activeBackground = previousBackground;
-                previousBackground = temp;
-              }
+                // let temp = activeBackground;
+                // activeBackground = previousBackground;
+                // previousBackground = temp;
+              } 
+              // else {
+              //   if (DEBUG) console.log("Upscroll else mid detected");
+              //   $(".pb-12").removeClass(activeBackground);
+
+              //   // Swap the variables (again — DRY? never heard of it)
+              //   let temp = activeBackground;
+              //   activeBackground = previousBackground;
+              //   previousBackground = temp;
+              // }
             }
           }
         });
