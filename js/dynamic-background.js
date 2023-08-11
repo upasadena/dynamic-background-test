@@ -15,6 +15,11 @@
 // Change to true if there is a bug
 const DEBUG = true;
 const centerAllowance = 45; // pixels
+
+// Whether a background colour should be set by default
+const setDefaultBackground = true;
+// Id in the css: `#my_id: { background: #900; }`
+const defaultBackgroundId = "red";
 // END CONSTANTS
 
 function swap(x, y) {
@@ -50,7 +55,10 @@ function swap(x, y) {
       $(function() {
         let endingTime = new Date().getTime();
         let tookTime = endingTime - startingTime;
-        console.log("jQuery is loaded, after " + tookTime + " milliseconds!");
+        if (DEBUG) {
+          console.log("jQuery is loaded, after " + tookTime + " milliseconds!");
+        }
+        $(".pb-12").addClass(defaultBackgroundId);
       });
 
       // Check if the <div> is in the viewport
@@ -110,10 +118,10 @@ function swap(x, y) {
         if (st > lastScrollTop){
           // If the user scrolled down
           userScrolledDown = true;
-          console.log("downscroll");
+          // console.log("downscroll");
         } else {
           // If the user scrolled up
-          console.log("upscroll");
+          // console.log("upscroll");
           userScrolledDown = false;
           // upscroll code
         }
@@ -126,6 +134,10 @@ function swap(x, y) {
           let activeBackground = $(this).attr("id");
           
           if ($(this).isInViewport()) {
+            if (previousBackground && previousBackground == activeBackground) {
+              return;
+            }
+
             // If the user scrolled down or up
             if (userScrolledDown) {
               // if (DEBUG) console.log("Downscroll mid detected");
@@ -135,13 +147,34 @@ function swap(x, y) {
                 $(".pb-12").removeClass(previousBackground);
               }
 
+              if (DEBUG) {
+                console.log("Downscroll if mid detected");
+                console.log("[before swap]")
+                console.log(`activeBackground: ${activeBackground}`);
+                console.log(`previousBackground: ${previousBackground}`);
+              }
+
               // Add new styling
               $(".pb-12").addClass(activeBackground);
               previousBackground = activeBackground;
+
+              if (DEBUG) {
+                console.log("Downscroll if mid detected");
+                console.log("[after swap]")
+                console.log(`activeBackground: ${activeBackground}`);
+                console.log(`previousBackground: ${previousBackground}`);
+                console.log("======================================")
+              }
             } else {
               // If user scrolled up
               if (previousBackground) {
-                if (DEBUG) console.log("Upscroll if mid detected");
+                if (DEBUG) {
+                  console.log("Upscroll if mid detected");
+                  console.log("[before swap]")
+                  console.log(`activeBackground: ${activeBackground}`);
+                  console.log(`previousBackground: ${previousBackground}`);
+                }
+
                 $(".pb-12").removeClass(activeBackground);
                 $(".pb-12").addClass(previousBackground);
 
@@ -149,16 +182,17 @@ function swap(x, y) {
                 // let temp = activeBackground;
                 // activeBackground = previousBackground;
                 // previousBackground = temp;
-              } 
-              // else {
-              //   if (DEBUG) console.log("Upscroll else mid detected");
-              //   $(".pb-12").removeClass(activeBackground);
 
-              //   // Swap the variables (again — DRY? never heard of it)
-              //   let temp = activeBackground;
-              //   activeBackground = previousBackground;
-              //   previousBackground = temp;
-              // }
+                activeBackground = previousBackground;
+
+                if (DEBUG) {
+                  console.log("Upscroll if mid detected");
+                  console.log("[after swap]")
+                  console.log(`activeBackground: ${activeBackground}`);
+                  console.log(`previousBackground: ${previousBackground}`);
+                  console.log("======================================")
+                }
+              } 
             }
           }
         });
