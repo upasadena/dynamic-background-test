@@ -27,6 +27,14 @@ function lastElement(arr) {
   return arr.slice(-1);
 }
 
+function isFullArray(arr) {
+  return arr && arr.length >= 1;
+}
+
+function debugObject(obj) {
+  console.log(`${JSON.stringify(obj, undefined, 2)}`);
+}
+
 // Anonymous "self-invoking" function
 (function() {
   let startingTime = new Date().getTime();
@@ -54,11 +62,11 @@ function lastElement(arr) {
     let userScrolledDown = false;
     const backgroundHistory = [];
     const historyObj = {
-      objectAbove: undefined,
+      objectsAbove: undefined, // array of strings
       currentObject: undefined,
-      objectBelow: undefined,
+      objectsBelow: undefined, // array of strings
     };
-    let $this = undefined;
+    let $previousThis = undefined;
 
     if (setDefaultBackground) {
       historyObj.currentObject = defaultBackgroundId;
@@ -128,7 +136,7 @@ function lastElement(arr) {
         let activeBackground = $(this).attr("id");
         
         if ($(this).isInViewport()) {
-          $this = $(this);
+          $previousThis = $(this);
           // if (DEBUG) console.log(`backgroundHistory: ${backgroundHistory}`);
 
           // If the background hasn't changed, return
@@ -136,42 +144,59 @@ function lastElement(arr) {
             return;
           }
 
-          // If the user scrolled down or up
+          // If the user scrolled down
           if (userScrolledDown) {
-            // If user has scrolled down
-            historyObj.objectAbove = historyObj.currentObject;
             historyObj.currentObject = activeBackground;
 
-            if (DEBUG) console.log(historyObj);
-
-            if (historyObj.objectAbove) {
-              $(".pb-12").removeClass(historyObj.objectAbove);
+            // If the history object exists and isn't an empty list
+            if (isFullArray(historyObj.objectsAbove)) {
+              $(".pb-12").removeClass(lastElement(historyObj.objectsAbove));
+              historyObj.objectsAbove.push(historyObj.currentObject)
+            } else {
+              historyObj.objectsAbove = [historyObj.currentObject];
             }
+
+            if (DEBUG) debugObject(historyObj);
 
             $(".pb-12").addClass(historyObj.currentObject);
 
           }
-        } else if ($this && $this.isInViewport()) {
-          if (DEBUG) console.log("UP IN VIEWPORT");
+        // If the previous context exists and that div is visible in the
+        // viewport, and if the user is scrolling up, then run this
+        } else if ($previousThis &&
+          $previousThis.isInViewport() &&
+          !userScrolledDown) {
 
-          if (!userScrolledDown) {
-            // If user scrolled up
-            historyObj.objectBelow = historyObj.currentObject;
+          // If the history object exists and isn't an empty array
+          // if (isFullArray(historyObj.objectsBelow)) {
+          //   historyObj.objectsBelow.push(historyObj.currentObject);
+          // } else {
+          //   historyObj.objectsBelow = [historyObj.currentObject]
+          // }
+
+          if (historyObj.currentObject === activeBackground) {
+            console.log("first eq")
+            // return;
+
             historyObj.currentObject = activeBackground;
 
-            if (DEBUG) console.log(historyObj);
+            if (DEBUG) debugObject(historyObj);
 
             $(".pb-12").removeClass(historyObj.currentObject);
             $(".pb-12").removeClass(defaultBackgroundId);
 
-            if (historyObj.objectAbove) {
-              $(".pb-12").addClass(historyObj.objectAbove);
+            if (isFullArray(historyObj.objectsAbove)) {
+              $(".pb-12").addClass(historyObj.objectsAbove.pop());
             } else if (setDefaultBackground) {
               $(".pb-12").addClass(defaultBackgroundId);
             }
-          }
-        } else {
-          if (DEBUG) console.log("NOT IN VIEWPORT");
+          } 
+          // else if (historyObj.currentObject === $previousThis.attr("id")) {
+          //   console.log("second eq");
+          //   return;
+          // }
+
+          
         }
       });
     });
