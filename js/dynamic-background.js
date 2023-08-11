@@ -58,6 +58,7 @@ function lastElement(arr) {
       currentObject: undefined,
       objectBelow: undefined,
     };
+    let $this = undefined;
 
     if (setDefaultBackground) {
       historyObj.currentObject = defaultBackgroundId;
@@ -126,7 +127,8 @@ function lastElement(arr) {
       $(".bg").each(function() {
         let activeBackground = $(this).attr("id");
         
-        if ($(this).isInViewport()) {
+        if (!$this && $(this).isInViewport()) {
+          $this = $(this);
           // if (DEBUG) console.log(`backgroundHistory: ${backgroundHistory}`);
 
           // If the background hasn't changed, return
@@ -148,14 +150,6 @@ function lastElement(arr) {
 
             $(".pb-12").addClass(historyObj.currentObject);
 
-            // Remove previous styling if it exists
-            // if (backgroundHistory.length > 0) {
-            //   $(".pb-12").removeClass(lastElement(backgroundHistory));
-            // }
-
-            // // Add new styling
-            // $(".pb-12").addClass(activeBackground);
-            // backgroundHistory.push(activeBackground);
           } else {
             // If user scrolled up
             historyObj.objectBelow = historyObj.currentObject;
@@ -171,29 +165,9 @@ function lastElement(arr) {
             } else if (setDefaultBackground) {
               $(".pb-12").addClass(defaultBackgroundId);
             }
-
-            // if (backgroundHistory.length > 1) {
-            //   $(".pb-12").removeClass(activeBackground);
-
-            //   backgroundHistory.pop();
-            //   $(".pb-12").addClass(lastElement(backgroundHistory));
-
-            //   // backgroundHistory.push(newClass);
-            // } else if (backgroundHistory.length > 0) {
-            //   // If there is only one item left
-
-            //   $(".pb-12").removeClass(activeBackground);
-
-            //   backgroundHistory.pop();
-            //   // $(".pb-12").addClass(backgroundHistory[1]);
-
-            //   if (setDefaultBackground) {
-            //     $(".pb-12").addClass(defaultBackgroundId);
-            //   }
-            // } else {
-            //   console.log(`else block`);
-            // }
           }
+        } else if ($this.isInViewport()) {
+          if (DEBUG) console.log("UP IN VIEWPORT");
         } else {
           if (DEBUG) console.log("NOT IN VIEWPORT");
         }
