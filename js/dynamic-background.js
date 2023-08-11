@@ -23,8 +23,13 @@ const defaultBackgroundId = "red";
 // END CONSTANTS
 
 function lastElement(arr) {
-  // return arr[arr.length - 1];
-  return arr.slice(-1);
+  let returnValue = null;
+
+  if (setDefaultBackground) {
+    returnValue = defaultBackgroundId;
+  }
+
+  return arr ? arr.slice(-1) : returnValue;
 }
 
 function isFullArray(arr) {
@@ -60,13 +65,12 @@ function debugObject(obj) {
     // let previousBackground = undefined;
     let lastScrollTop = 0;
     let userScrolledDown = false;
-    const backgroundHistory = [];
     const historyObj = {
       objectsAbove: undefined, // array of strings
-      currentObject: undefined,
-      objectsBelow: undefined, // array of strings
+      currentObject: undefined ,
     };
-    let $previousThis = undefined;
+    let $previousThis;
+    let scrollUpObject;
 
     if (setDefaultBackground) {
       historyObj.currentObject = defaultBackgroundId;
@@ -84,8 +88,33 @@ function debugObject(obj) {
 
       if (setDefaultBackground) {
         $(".pb-12").addClass(defaultBackgroundId);
-        backgroundHistory.push(defaultBackgroundId);
+        historyObj.currentObject = defaultBackgroundId;
       }
+    });
+
+    // Check if the user has scrolled to the top or bottom
+    $(function () {
+      var $win = $(window);
+
+      $win.scroll(function () {
+        if ($win.scrollTop() <= 0) {
+          if (DEBUG) console.log("Scrolled to Page Top");
+          
+          if (setDefaultBackground) {
+            if (historyObj.currentObject) {
+              $(".pb-12").removeClass(historyObj.currentObject);
+            }
+
+            $(".pb-12").addClass(defaultBackgroundId);
+            historyObj.currentObject = defaultBackgroundId;
+          }
+        } else if (
+          $win.height() + $win.scrollTop() == $(document).height()
+        ) {
+          // doesn't work I think
+          if (DEBUG) console.log("Scrolled to Page Bottom");
+        }
+      });
     });
 
     // Check if the <div> is in the viewport
@@ -177,6 +206,13 @@ function debugObject(obj) {
 
           let previousBackground = $previousThis.attr("id");
 
+          if (scrollUpObject && scrollUpObject == previousBackground) {
+            console.log("early return");
+            return;
+          }
+
+          scrollUpObject = previousBackground;
+
           // if (historyObj.currentObject === activeBackground) {
           //   // Check that it's only happened once
           //   // console.log("activeBackground return");
@@ -187,34 +223,35 @@ function debugObject(obj) {
             
           if (historyObj.currentObject == previousBackground ||
             historyObj.currentObject == activeBackground) {
-            console.log("[return]");
+            // console.log("[return]");
+
+            $(".pb-12").removeClass(historyObj.currentObject);
+            historyObj.currentObject = historyObj.objectsAbove.pop();
+
+            // if (DEBUG) debugObject(historyObj);
+
+            // $(".pb-12").removeClass(historyObj.currentObject);
+            // $(".pb-12").removeClass(defaultBackgroundId);
+
+            if (isFullArray(historyObj.objectsAbove)) {
+              $(".pb-12").addClass(historyObj.currentObject);
+            } else if (setDefaultBackground) {
+              $(".pb-12").addClass(defaultBackgroundId);
+            }
+
             return;
           }
 
-          if (DEBUG) console.log(`==========\n
-activeBackground = ${activeBackground}\n
-previousBackground = ${previousBackground}\n
-==========`);
+//           if (DEBUG) console.log(`==========\n
+// activeBackground = ${activeBackground}\n
+// previousBackground = ${previousBackground}\n
+// scrollUpObject = ${scrollUpObject}\n
+// ==========`);
 
-          $(".pb-12").removeClass(historyObj.currentObject);
-          historyObj.currentObject = activeBackground;
+          // console.log(scrollUpObject);
 
-          // if (DEBUG) debugObject(historyObj);
-
-          $(".pb-12").removeClass(historyObj.currentObject);
-          // $(".pb-12").removeClass(defaultBackgroundId);
-
-          if (isFullArray(historyObj.objectsAbove)) {
-            $(".pb-12").addClass(historyObj.objectsAbove.pop());
-          } else if (setDefaultBackground) {
-            $(".pb-12").addClass(defaultBackgroundId);
-          }
-
-          
-          // else if (historyObj.currentObject === $previousThis.attr("id")) {
-          //   console.log("second eq");
-          //   return;
-          // }
+          // $(".pb-12").removeClass(historyObj.currentObject);
+          // historyObj.currentObject = activeBackground;
 
           
         }
